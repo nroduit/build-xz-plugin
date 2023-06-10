@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2009-2019 Nicolas Roduit and other contributors.
+ * Copyright (c) 2009-2023 Nicolas Roduit and other contributors.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License 2.0 which is available at
@@ -19,6 +19,9 @@ import java.util.List;
 
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.plugins.annotations.LifecyclePhase;
+import org.apache.maven.plugins.annotations.Mojo;
+import org.apache.maven.plugins.annotations.Parameter;
 import org.codehaus.plexus.util.FileUtils;
 import org.codehaus.plexus.util.IOUtil;
 import org.codehaus.plexus.util.StringUtils;
@@ -27,46 +30,38 @@ import org.tukaani.xz.XZOutputStream;
 
 /**
  * Goal capable of compressing a list of jar files with the pack200 tool.
- * 
- * @goal packFiles
- * 
- * @phase package
  */
+@Mojo(name = "packFiles", defaultPhase = LifecyclePhase.PACKAGE)
 public class XzCompressionMojo extends AbstractMojo {
 
     /**
      * The base directory to scan for JAR files using Ant-like inclusion/exclusion patterns.
-     * 
-     * @parameter property="xz.archiveDirectory"
-     * @required
      */
+    @Parameter(property = "xz.archiveDirectory", required = true)
     private File archiveDirectory;
     /**
      * The directory where xz files are written.
-     * 
-     * @parameter property="xz.outputDirectory"
      */
+    @Parameter(property = "xz.outputDirectory")
     private File outputDirectory;
     /**
      * The Ant-like inclusion patterns used to select JAR files to process. The patterns must be relative to the
      * directory given by the parameter {@link #archiveDirectory}. By default, the pattern
      * <code>&#42;&#42;/&#42;.?ar</code> is used.
-     * 
-     * @parameter
+     *
      */
-    private String[] includes = { "**/*.?ar" };
+    @Parameter(defaultValue =  "**/*.?ar")
+    private String[] includes;
 
     /**
      * The Ant-like exclusion patterns used to exclude JAR files from processing. The patterns must be relative to the
      * directory given by the parameter {@link #archiveDirectory}.
-     * 
-     * @parameter
+     *
      */
-    private String[] excludes = {};
-    
-    /**
-     * @parameter default-value="9"
-     */
+    @Parameter
+    private String[] excludes;
+
+    @Parameter(defaultValue = "9")
     private Integer xzCompressionLevel;
     
 
